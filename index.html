@@ -24,22 +24,21 @@ input[type="file"] {
   cursor: pointer;
   width: 90%;
   max-width: 400px;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .trim-container {
-  display: flex;
-  justify-content: space-around;
+  display: none; /* caché par défaut */
   flex-wrap: wrap;
+  justify-content: space-around;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-top: 1rem;
 }
 
 .trim-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex-basis: 45%;
   min-width: 140px;
   background: #fff;
   padding: 1rem;
@@ -47,10 +46,7 @@ input[type="file"] {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.trim-label {
-  font-weight: bold;
-  margin: 0.3rem 0;
-}
+.trim-label { font-weight: bold; margin: 0.3rem 0; }
 
 .slider-container input[type="range"] {
   width: 100%;
@@ -66,16 +62,26 @@ audio {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
+button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #4caf50;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover { background-color: #45a049; }
+
 footer {
   margin-top: 3rem;
   font-size: 0.9rem;
   color: #555;
   font-weight: 500;
 }
-footer a {
-  color: #4caf50;
-  text-decoration: none;
-}
+footer a { color: #4caf50; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -88,7 +94,13 @@ footer a {
 <p>Importe un fichier audio ou vidéo et il se lira automatiquement en boucle :</p>
 <input type="file" id="fileInput" accept="audio/*,video/*">
 
-<div class="trim-container">
+<audio id="audioPlayer" controls></audio>
+
+<div>
+  <button id="toggleTrim">Afficher les options de trim</button>
+</div>
+
+<div class="trim-container" id="trimContainer">
   <div class="trim-box">
     <label for="startSlider">Début</label>
     <span class="trim-label" id="startLabel">0.00</span>
@@ -101,8 +113,6 @@ footer a {
   </div>
 </div>
 
-<audio id="audioPlayer" controls></audio>
-
 <footer>
 Samuel Ferton – École Guitarisation™ – <a href="https://guitarschool.guitarisation.fr" target="_blank">guitarschool.guitarisation.fr</a> – 2025
 </footer>
@@ -114,6 +124,8 @@ const startSlider = document.getElementById('startSlider');
 const endSlider = document.getElementById('endSlider');
 const startLabel = document.getElementById('startLabel');
 const endLabel = document.getElementById('endLabel');
+const trimContainer = document.getElementById('trimContainer');
+const toggleTrim = document.getElementById('toggleTrim');
 
 function updateLabels() {
   startLabel.textContent = parseFloat(startSlider.value).toFixed(2);
@@ -152,6 +164,17 @@ inputFile.addEventListener('change', (e) => {
 audioPlayer.addEventListener('timeupdate', () => {
   if(audioPlayer.currentTime >= parseFloat(endSlider.value)) {
     audioPlayer.currentTime = parseFloat(startSlider.value);
+  }
+});
+
+// Afficher ou cacher les sliders
+toggleTrim.addEventListener('click', () => {
+  if(trimContainer.style.display === 'flex') {
+    trimContainer.style.display = 'none';
+    toggleTrim.textContent = "Afficher les options de trim";
+  } else {
+    trimContainer.style.display = 'flex';
+    toggleTrim.textContent = "Masquer les options de trim";
   }
 });
 
