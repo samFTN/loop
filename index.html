@@ -20,6 +20,7 @@
       border: 2px dashed #aaa;
       border-radius: 12px;
       background: white;
+      cursor: pointer;
     }
     audio {
       width: 90%;
@@ -30,7 +31,7 @@
 </head>
 <body>
   <h1>🎸 Loops by Samuel</h1>
-  <p>Sélectionne un fichier audio depuis ton téléphone ou ton ordi :</p>
+  <p>Sélectionne un fichier audio depuis ton téléphone ou ordinateur :</p>
 
   <input type="file" id="fileInput" accept="audio/*">
 
@@ -43,6 +44,13 @@
     input.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
+
+      // Vérifie que le fichier est bien audio
+      if (!file.type.startsWith('audio/')) {
+        alert("Merci de choisir un fichier audio.");
+        return;
+      }
+
       const url = URL.createObjectURL(file);
       player.src = url;
       player.play().catch(() => {}); // auto-play si possible
