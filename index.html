@@ -63,17 +63,16 @@ audio {
 }
 
 button {
-  margin-top: 0.5rem;
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 8px;
-  background-color: #4caf50;
-  color: white;
-  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.6rem;
+  background-color: #e0e0e0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
 }
-button:hover { background-color: #45a049; }
+button:hover { background-color: #d5d5d5; }
 
 footer {
   margin-top: 3rem;
@@ -97,7 +96,7 @@ footer a { color: #4caf50; text-decoration: none; }
 <audio id="audioPlayer" controls></audio>
 
 <div>
-  <button id="toggleTrim">Afficher les options de trim</button>
+  <button id="toggleTrim">Réglages de la loop</button>
 </div>
 
 <div class="trim-container" id="trimContainer">
@@ -171,10 +170,10 @@ audioPlayer.addEventListener('timeupdate', () => {
 toggleTrim.addEventListener('click', () => {
   if(trimContainer.style.display === 'flex') {
     trimContainer.style.display = 'none';
-    toggleTrim.textContent = "Afficher les options de trim";
+    toggleTrim.textContent = "Réglages de la loop";
   } else {
     trimContainer.style.display = 'flex';
-    toggleTrim.textContent = "Masquer les options de trim";
+    toggleTrim.textContent = "Masquer les réglages";
   }
 });
 
