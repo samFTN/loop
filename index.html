@@ -21,14 +21,16 @@
     audio { width: 90%; margin-top: 1rem; outline: none; }
     .trim-container {
       display: flex;
-      justify-content: center;
-      gap: 2rem;
+      justify-content: space-around;
       flex-wrap: wrap;
       margin: 1rem 0;
+      gap: 2rem;
     }
     .trim-box { display: flex; flex-direction: column; align-items: center; }
+    .trim-label { margin-bottom: 0.3rem; font-weight: bold; }
     .trim-controls { margin-top: 0.5rem; }
     .trim-controls button { margin: 0 0.2rem; }
+    .slider-container { display: flex; flex-direction: column; align-items: center; }
   </style>
 </head>
 <body>
@@ -39,22 +41,24 @@
 
   <div class="trim-container">
     <div class="trim-box">
-      <label>Début (s)</label>
-      <input type="range" id="startSlider" min="0" step="0.01" value="0">
+      <span class="trim-label" id="startLabel">0.00</span>
+      <div class="slider-container">
+        <input type="range" id="startSlider" min="0" step="0.01" value="0">
+      </div>
       <div class="trim-controls">
         <button id="startMinus">-0.1</button>
         <button id="startPlus">+0.1</button>
       </div>
-      <span id="startLabel">0.00</span>
     </div>
     <div class="trim-box">
-      <label>Fin (s)</label>
-      <input type="range" id="endSlider" min="0" step="0.01" value="0">
+      <span class="trim-label" id="endLabel">0.00</span>
+      <div class="slider-container">
+        <input type="range" id="endSlider" min="0" step="0.01" value="0">
+      </div>
       <div class="trim-controls">
         <button id="endMinus">-0.1</button>
         <button id="endPlus">+0.1</button>
       </div>
-      <span id="endLabel">0.00</span>
     </div>
   </div>
 
@@ -77,6 +81,8 @@
     const endPlus = document.getElementById('endPlus');
 
     const playTrim = document.getElementById('playTrim');
+
+    let loopInterval;
 
     function updateLabels() {
       startLabel.textContent = parseFloat(startSlider.value).toFixed(2);
@@ -107,9 +113,10 @@
       player.play().catch(() => {});
 
       player.addEventListener('loadedmetadata', () => {
-        startSlider.max = player.duration.toFixed(2);
-        endSlider.max = player.duration.toFixed(2);
-        endSlider.value = player.duration.toFixed(2);
+        const duration = player.duration.toFixed(2);
+        startSlider.max = duration;
+        endSlider.max = duration;
+        endSlider.value = duration;
         updateLabels();
       });
     });
@@ -122,13 +129,13 @@
       player.currentTime = start;
       player.play();
 
-      player.removeEventListener('timeupdate', player.onTimeUpdate);
-      player.onTimeUpdate = () => {
+      if(loopInterval) clearInterval(loopInterval);
+
+      loopInterval = setInterval(() => {
         if (player.currentTime >= end) {
           player.currentTime = start;
         }
-      };
-      player.addEventListener('timeupdate', player.onTimeUpdate);
+      }, 10); // vérifie toutes les 10ms pour boucle précise
     });
 
     // Initial labels
