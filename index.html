@@ -11,32 +11,24 @@
       background: #fafafa;
       padding: 2rem;
     }
-    h1 {
-      color: #333;
-    }
-    input[type="file"], input[type="number"], button, input[type="range"] {
+    h1 { color: #333; }
+    input[type="file"], button, input[type="range"] {
       margin: 0.5rem 0;
       padding: 0.5rem;
       border-radius: 8px;
       border: 1px solid #aaa;
     }
-    audio {
-      width: 90%;
-      margin-top: 1rem;
-      outline: none;
-    }
+    audio { width: 90%; margin-top: 1rem; outline: none; }
     .trim-container {
       display: flex;
       justify-content: center;
-      gap: 1rem;
+      gap: 2rem;
       flex-wrap: wrap;
       margin: 1rem 0;
     }
-    .trim-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    .trim-box { display: flex; flex-direction: column; align-items: center; }
+    .trim-controls { margin-top: 0.5rem; }
+    .trim-controls button { margin: 0 0.2rem; }
   </style>
 </head>
 <body>
@@ -49,12 +41,20 @@
     <div class="trim-box">
       <label>Début (s)</label>
       <input type="range" id="startSlider" min="0" step="0.01" value="0">
-      <input type="number" id="startNumber" min="0" step="0.01" value="0">
+      <div class="trim-controls">
+        <button id="startMinus">-0.1</button>
+        <button id="startPlus">+0.1</button>
+      </div>
+      <span id="startLabel">0.00</span>
     </div>
     <div class="trim-box">
       <label>Fin (s)</label>
       <input type="range" id="endSlider" min="0" step="0.01" value="0">
-      <input type="number" id="endNumber" min="0" step="0.01" value="0">
+      <div class="trim-controls">
+        <button id="endMinus">-0.1</button>
+        <button id="endPlus">+0.1</button>
+      </div>
+      <span id="endLabel">0.00</span>
     </div>
   </div>
 
@@ -68,56 +68,56 @@
 
     const startSlider = document.getElementById('startSlider');
     const endSlider = document.getElementById('endSlider');
-    const startNumber = document.getElementById('startNumber');
-    const endNumber = document.getElementById('endNumber');
+    const startLabel = document.getElementById('startLabel');
+    const endLabel = document.getElementById('endLabel');
+
+    const startMinus = document.getElementById('startMinus');
+    const startPlus = document.getElementById('startPlus');
+    const endMinus = document.getElementById('endMinus');
+    const endPlus = document.getElementById('endPlus');
+
     const playTrim = document.getElementById('playTrim');
 
-    let fileUrl;
-
-    // Synchronisation slider <-> input number
-    function syncStart(value) {
-      startSlider.value = value;
-      startNumber.value = value;
-    }
-    function syncEnd(value) {
-      endSlider.value = value;
-      endNumber.value = value;
+    function updateLabels() {
+      startLabel.textContent = parseFloat(startSlider.value).toFixed(2);
+      endLabel.textContent = parseFloat(endSlider.value).toFixed(2);
     }
 
-    startSlider.addEventListener('input', e => syncStart(e.target.value));
-    startNumber.addEventListener('input', e => syncStart(e.target.value));
-    endSlider.addEventListener('input', e => syncEnd(e.target.value));
-    endNumber.addEventListener('input', e => syncEnd(e.target.value));
+    function changeValue(slider, delta) {
+      let value = parseFloat(slider.value) + delta;
+      value = Math.max(0, Math.min(player.duration || 0, value));
+      slider.value = value;
+      updateLabels();
+    }
 
-    // Import du fichier
+    startSlider.addEventListener('input', updateLabels);
+    endSlider.addEventListener('input', updateLabels);
+
+    startMinus.addEventListener('click', () => changeValue(startSlider, -0.1));
+    startPlus.addEventListener('click', () => changeValue(startSlider, 0.1));
+    endMinus.addEventListener('click', () => changeValue(endSlider, -0.1));
+    endPlus.addEventListener('click', () => changeValue(endSlider, 0.1));
+
     inputFile.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      fileUrl = URL.createObjectURL(file);
-      player.src = fileUrl;
+      player.src = URL.createObjectURL(file);
       player.loop = true;
       player.play().catch(() => {});
 
       player.addEventListener('loadedmetadata', () => {
-        const duration = player.duration.toFixed(2);
-        startSlider.max = duration;
-        endSlider.max = duration;
-        endSlider.value = duration;
-        startNumber.max = duration;
-        endNumber.max = duration;
-        endNumber.value = duration;
+        startSlider.max = player.duration.toFixed(2);
+        endSlider.max = player.duration.toFixed(2);
+        endSlider.value = player.duration.toFixed(2);
+        updateLabels();
       });
     });
 
     playTrim.addEventListener('click', () => {
       const start = parseFloat(startSlider.value);
       const end = parseFloat(endSlider.value);
-
-      if (start >= end) {
-        alert("Le début doit être inférieur à la fin !");
-        return;
-      }
+      if (start >= end) { alert("Le début doit être inférieur à la fin !"); return; }
 
       player.currentTime = start;
       player.play();
@@ -130,6 +130,9 @@
       };
       player.addEventListener('timeupdate', player.onTimeUpdate);
     });
+
+    // Initial labels
+    updateLabels();
   </script>
 
   <p style="margin-top:2rem; color:#666;">© Samuel — 2025</p>
