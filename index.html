@@ -4,32 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loop - Guitarisation™</title>
+  <script src="https://unpkg.com/wavesurfer.js"></script>
   <style>
-    /* SF Pro Display si dispo, sinon fallback système */
     body {
-      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       text-align: center;
       background: #f0f2f5;
       padding: 2rem;
       color: #333;
     }
 
-    .header {
-      margin-bottom: 2rem;
-    }
+    .header { margin-bottom: 1.5rem; }
+    .small-title { font-size: 1rem; color: #777; letter-spacing: 0.05em; }
+    .main-title { font-size: 3rem; font-weight: bold; color: #111; margin-top: 0.2rem; }
 
-    .small-title {
-      font-size: 1rem;
-      color: #777;
-      letter-spacing: 0.05em;
-    }
-
-    .main-title {
-      font-size: 3rem;
-      font-weight: bold;
-      color: #111;
-      margin-top: 0.2rem;
-    }
+    #waveform { width: 100%; max-width: 600px; margin: 1rem auto; height: 120px; }
 
     input[type="file"] {
       padding: 1rem;
@@ -39,87 +28,17 @@
       cursor: pointer;
       width: 90%;
       max-width: 400px;
-      margin-bottom: 2rem;
-    }
-
-    .trim-container {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .trim-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex-basis: 45%;
-      min-width: 140px;
-      background: #fff;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    .trim-box label {
-      font-weight: bold;
-      margin-bottom: 0.3rem;
-    }
-
-    .trim-label {
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-      color: #555;
-    }
-
-    .slider-container input[type="range"] {
-      width: 100%;
-      accent-color: #4caf50;
-      cursor: pointer;
-    }
-
-    .trim-controls {
-      margin-top: 0.5rem;
-    }
-
-    .trim-controls button {
-      margin: 0 0.2rem;
-      padding: 0.4rem 0.8rem;
-      border: none;
-      border-radius: 8px;
-      background-color: #4caf50;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .trim-controls button:hover {
-      background-color: #45a049;
-    }
-
-    audio {
-      width: 90%;
-      max-width: 600px;
-      margin-top: 1rem;
-      outline: none;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 1rem;
     }
 
     footer {
-      margin-top: 3rem;
+      margin-top: 2rem;
       font-size: 0.9rem;
       color: #555;
       font-weight: 500;
     }
 
-    footer a {
-      color: #4caf50;
-      text-decoration: none;
-    }
-
+    footer a { color: #4caf50; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -129,111 +48,59 @@
     <div class="main-title">Loop</div>
   </div>
 
-  <input type="file" id="fileInput" accept="audio/*,video/*">
-
-  <div class="trim-container">
-    <div class="trim-box">
-      <label for="startSlider">Début</label>
-      <span class="trim-label" id="startLabel">0.00</span>
-      <div class="slider-container">
-        <input type="range" id="startSlider" min="0" step="0.01" value="0">
-      </div>
-      <div class="trim-controls">
-        <button id="startMinus">-0.1</button>
-        <button id="startPlus">+0.1</button>
-      </div>
-    </div>
-    <div class="trim-box">
-      <label for="endSlider">Fin</label>
-      <span class="trim-label" id="endLabel">0.00</span>
-      <div class="slider-container">
-        <input type="range" id="endSlider" min="0" step="0.01" value="0">
-      </div>
-      <div class="trim-controls">
-        <button id="endMinus">-0.1</button>
-        <button id="endPlus">+0.1</button>
-      </div>
-    </div>
-  </div>
-
-  <audio id="audioPlayer" controls></audio>
+  <input type="file" id="fileInput" accept="audio/*">
+  <div id="waveform"></div>
 
   <footer>
     Samuel Ferton – École Guitarisation™ – <a href="https://guitarschool.guitarisation.fr" target="_blank">guitarschool.guitarisation.fr</a> – 2025
   </footer>
 
   <script>
-    const inputFile = document.getElementById('fileInput');
-    const player = document.getElementById('audioPlayer');
+    const fileInput = document.getElementById('fileInput');
 
-    const startSlider = document.getElementById('startSlider');
-    const endSlider = document.getElementById('endSlider');
-    const startLabel = document.getElementById('startLabel');
-    const endLabel = document.getElementById('endLabel');
-
-    const startMinus = document.getElementById('startMinus');
-    const startPlus = document.getElementById('startPlus');
-    const endMinus = document.getElementById('endMinus');
-    const endPlus = document.getElementById('endPlus');
-
-    let loopInterval;
-
-    function updateLabels() {
-      startLabel.textContent = parseFloat(startSlider.value).toFixed(2);
-      endLabel.textContent = parseFloat(endSlider.value).toFixed(2);
-    }
-
-    function changeValue(slider, delta) {
-      let value = parseFloat(slider.value) + delta;
-      value = Math.max(0, Math.min(player.duration || 0, value));
-      slider.value = value;
-      updateLabels();
-    }
-
-    function adjustLoop() {
-      const start = parseFloat(startSlider.value);
-      const end = parseFloat(endSlider.value);
-      if (start >= end) return;
-      if (player.currentTime < start || player.currentTime > end) {
-        player.currentTime = start;
-      }
-    }
-
-    startSlider.addEventListener('input', () => { updateLabels(); adjustLoop(); });
-    endSlider.addEventListener('input', () => { updateLabels(); adjustLoop(); });
-
-    startMinus.addEventListener('click', () => { changeValue(startSlider, -0.1); adjustLoop(); });
-    startPlus.addEventListener('click', () => { changeValue(startSlider, 0.1); adjustLoop(); });
-    endMinus.addEventListener('click', () => { changeValue(endSlider, -0.1); adjustLoop(); });
-    endPlus.addEventListener('click', () => { changeValue(endSlider, 0.1); adjustLoop(); });
-
-    inputFile.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      player.src = URL.createObjectURL(file);
-      player.loop = true;
-      player.play().catch(() => {});
-
-      player.addEventListener('loadedmetadata', () => {
-        const duration = player.duration.toFixed(2);
-        startSlider.max = duration;
-        endSlider.max = duration;
-        endSlider.value = duration;
-        updateLabels();
-
-        if(loopInterval) clearInterval(loopInterval);
-        loopInterval = setInterval(() => {
-          const start = parseFloat(startSlider.value);
-          const end = parseFloat(endSlider.value);
-          if (player.currentTime >= end) {
-            player.currentTime = start;
-          }
-        }, 10);
-      });
+    // Crée le WaveSurfer
+    const wavesurfer = WaveSurfer.create({
+      container: '#waveform',
+      waveColor: '#b0c4de',
+      progressColor: '#4caf50',
+      cursorColor: '#333',
+      height: 120,
+      responsive: true
     });
 
-    updateLabels();
+    let loopStart = 0;
+    let loopEnd = 0;
+
+    // Ajouter région pour le loop
+    wavesurfer.on('ready', () => {
+      loopEnd = wavesurfer.getDuration();
+      wavesurfer.enableDragSelection({ color: 'rgba(76, 175, 80, 0.3)' });
+    });
+
+    // Quand une région est créée ou modifiée
+    wavesurfer.on('region-created', (region) => {
+      loopStart = region.start;
+      loopEnd = region.end;
+      region.loop = true;
+    });
+
+    wavesurfer.on('region-updated', (region) => {
+      loopStart = region.start;
+      loopEnd = region.end;
+    });
+
+    // Lecture continue dans la région
+    wavesurfer.on('audioprocess', () => {
+      const pos = wavesurfer.getCurrentTime();
+      if(pos >= loopEnd) wavesurfer.setCurrentTime(loopStart);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      wavesurfer.load(URL.createObjectURL(file));
+      wavesurfer.on('ready', () => wavesurfer.play());
+    });
   </script>
 
 </body>
