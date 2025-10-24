@@ -1,139 +1,127 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loop - Guitarisation™</title>
-  <style>
-    body {
-      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      text-align: center;
-      background: #f0f2f5;
-      padding: 2rem;
-      color: #333;
-    }
-    .header { margin-bottom: 2rem; }
-    .small-title { font-size: 1rem; color: #777; letter-spacing: 0.05em; }
-    .main-title { font-size: 3rem; font-weight: bold; color: #111; margin-top: 0.2rem; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loop - Guitarisation™</title>
+<style>
+body {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-align: center;
+  background: #f0f2f5;
+  padding: 2rem;
+  color: #333;
+}
+.header { margin-bottom: 2rem; }
+.small-title { font-size: 1rem; color: #777; letter-spacing: 0.05em; }
+.main-title { font-size: 3rem; font-weight: bold; color: #111; margin-top: 0.2rem; }
 
-    input[type="number"], button {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      border-radius: 8px;
-      border: 1px solid #aaa;
-    }
+input[type="number"], button {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+}
 
-    .slider-container input[type="range"] {
-      width: 100%;
-      accent-color: #4caf50;
-    }
+.slider-container input[type="range"] {
+  width: 100%;
+  accent-color: #4caf50;
+}
 
-    .trim-container { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
-    .trim-box { display: flex; flex-direction: column; align-items: center; flex-basis: 45%; min-width: 140px; background: #fff; padding: 1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.trim-container { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+.trim-box { display: flex; flex-direction: column; align-items: center; flex-basis: 45%; min-width: 140px; background: #fff; padding: 1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.trim-label { font-weight: bold; margin: 0.3rem 0; }
 
-    .trim-label { font-weight: bold; margin: 0.3rem 0; }
+audio { width: 90%; max-width: 600px; margin-top: 1rem; outline: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 
-    audio { width: 90%; max-width: 600px; margin-top: 1rem; outline: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-
-    footer { margin-top: 3rem; font-size: 0.9rem; color: #555; font-weight: 500; }
-    footer a { color: #4caf50; text-decoration: none; }
-  </style>
+footer { margin-top: 3rem; font-size: 0.9rem; color: #555; font-weight: 500; }
+footer a { color: #4caf50; text-decoration: none; }
+</style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="small-title">Guitarisation™</div>
-    <div class="main-title">Loop</div>
+<div class="header">
+  <div class="small-title">Guitarisation™</div>
+  <div class="main-title">Loop</div>
+</div>
+
+<div class="trim-container">
+  <div class="trim-box">
+    <label for="startSlider">Début</label>
+    <span class="trim-label" id="startLabel">0.00</span>
+    <input type="range" id="startSlider" min="0" step="0.01" value="0">
   </div>
-
-  <input type="text" id="audioUrl" placeholder="URL du fichier audio"><br>
-  <button id="setLink">Charger l’audio</button>
-
-  <div class="trim-container">
-    <div class="trim-box">
-      <label for="startSlider">Début</label>
-      <span class="trim-label" id="startLabel">0.00</span>
-      <input type="range" id="startSlider" min="0" step="0.01" value="0">
-    </div>
-    <div class="trim-box">
-      <label for="endSlider">Fin</label>
-      <span class="trim-label" id="endLabel">0.00</span>
-      <input type="range" id="endSlider" min="0" step="0.01" value="0">
-    </div>
+  <div class="trim-box">
+    <label for="endSlider">Fin</label>
+    <span class="trim-label" id="endLabel">0.00</span>
+    <input type="range" id="endSlider" min="0" step="0.01" value="0">
   </div>
+</div>
 
-  <audio id="audioPlayer" controls></audio>
+<audio id="audioPlayer" controls></audio>
 
-  <footer>
-    Samuel Ferton – École Guitarisation™ – <a href="https://guitarschool.guitarisation.fr" target="_blank">guitarschool.guitarisation.fr</a> – 2025
-  </footer>
+<footer>
+Samuel Ferton – École Guitarisation™ – <a href="https://guitarschool.guitarisation.fr" target="_blank">guitarschool.guitarisation.fr</a> – 2025
+</footer>
 
 <script>
-const urlParams = new URLSearchParams(window.location.search);
-const initialAudio = urlParams.get('audio');
-const initialStart = parseFloat(urlParams.get('start')) || 0;
-const initialEnd = parseFloat(urlParams.get('end')) || 0;
-
 const audioPlayer = document.getElementById('audioPlayer');
 const startSlider = document.getElementById('startSlider');
 const endSlider = document.getElementById('endSlider');
 const startLabel = document.getElementById('startLabel');
 const endLabel = document.getElementById('endLabel');
-const audioUrlInput = document.getElementById('audioUrl');
-const setLinkBtn = document.getElementById('setLink');
+
+// 🔹 Remplace ici par le fichier audio hébergé sur ton site
+const audioUrl = 'loop.mp3';
+audioPlayer.src = audioUrl;
+audioPlayer.loop = true;
+audioPlayer.play().catch(()=>{});
+
+// Lecture et boucle
+function adjustLoop() {
+  const start = parseFloat(startSlider.value);
+  const end = parseFloat(endSlider.value);
+  if(start >= end) return;
+  if(audioPlayer.currentTime < start || audioPlayer.currentTime > end) {
+    audioPlayer.currentTime = start;
+  }
+}
 
 function updateLabels() {
   startLabel.textContent = parseFloat(startSlider.value).toFixed(2);
   endLabel.textContent = parseFloat(endSlider.value).toFixed(2);
 }
 
-function adjustLoop() {
-  const start = parseFloat(startSlider.value);
-  const end = parseFloat(endSlider.value);
-  if (start >= end) return;
-  if (audioPlayer.currentTime < start || audioPlayer.currentTime > end) {
-    audioPlayer.currentTime = start;
-  }
-}
+// Paramètres depuis l’URL
+const params = new URLSearchParams(window.location.search);
+startSlider.value = parseFloat(params.get('start')) || 0;
+endSlider.value = parseFloat(params.get('end')) || 0;
 
-// Sliders
+audioPlayer.addEventListener('loadedmetadata', () => {
+  if(endSlider.value == 0) endSlider.value = audioPlayer.duration.toFixed(2);
+  startSlider.max = audioPlayer.duration;
+  endSlider.max = audioPlayer.duration;
+  updateLabels();
+});
+
 startSlider.addEventListener('input', () => { updateLabels(); adjustLoop(); });
 endSlider.addEventListener('input', () => { updateLabels(); adjustLoop(); });
 
-// Charger audio depuis URL + set start/end
-function loadAudio(url, start=0, end=null) {
-  audioPlayer.src = url;
-  audioPlayer.loop = true;
-  audioPlayer.play().catch(()=>{});
-  audioPlayer.addEventListener('loadedmetadata', () => {
-    end = end || audioPlayer.duration.toFixed(2);
-    startSlider.max = audioPlayer.duration;
-    endSlider.max = audioPlayer.duration;
-    startSlider.value = start;
-    endSlider.value = end;
-    updateLabels();
-
-    audioPlayer.addEventListener('timeupdate', () => {
-      if (audioPlayer.currentTime >= parseFloat(endSlider.value)) {
-        audioPlayer.currentTime = parseFloat(startSlider.value);
-      }
-    });
-  });
-}
-
-// Charger depuis URL + paramètres existants
-if (initialAudio) loadAudio(initialAudio, initialStart, initialEnd);
-
-// Bouton pour charger le lien
-setLinkBtn.addEventListener('click', () => {
-  const url = audioUrlInput.value.trim();
-  if(!url) return;
-  // Génère le lien partageable
-  const link = `${window.location.origin}${window.location.pathname}?audio=${encodeURIComponent(url)}&start=${startSlider.value}&end=${endSlider.value}`;
-  window.history.replaceState(null, '', link);
-  loadAudio(url, parseFloat(startSlider.value), parseFloat(endSlider.value));
+// Boucle continue
+audioPlayer.addEventListener('timeupdate', () => {
+  if(audioPlayer.currentTime >= parseFloat(endSlider.value)) {
+    audioPlayer.currentTime = parseFloat(startSlider.value);
+  }
 });
+
+// Générer lien partageable
+function generateLink() {
+  const link = `${window.location.origin}${window.location.pathname}?start=${startSlider.value}&end=${endSlider.value}`;
+  navigator.clipboard.writeText(link).then(()=>alert("Lien copié !"));
+}
 </script>
+
+<button onclick="generateLink()">Copier le lien partageable</button>
 
 </body>
 </html>
