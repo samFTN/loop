@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loops by Samuel</title>
+  <title>Loops par Samuel</title>
   <style>
     body {
       font-family: sans-serif;
@@ -14,46 +14,69 @@
     h1 {
       color: #333;
     }
-    input[type="file"] {
-      margin: 1rem 0;
-      padding: 1rem;
-      border: 2px dashed #aaa;
-      border-radius: 12px;
-      background: white;
-      cursor: pointer;
+    input[type="file"], input[type="number"], button {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #aaa;
     }
     audio {
       width: 90%;
-      margin-top: 2rem;
+      margin-top: 1rem;
       outline: none;
     }
   </style>
 </head>
 <body>
   <h1>🎸 Loops by Samuel</h1>
-  <p>Sélectionne un fichier audio depuis ton téléphone ou ordinateur :</p>
+  <p>Sélectionne un fichier audio ou vidéo : le son sera lu en boucle.</p>
 
-  <input type="file" id="fileInput" accept="audio/*">
+  <input type="file" id="fileInput" accept="audio/*,video/*"><br>
+
+  <input type="number" id="start" placeholder="Début (secondes)">
+  <input type="number" id="end" placeholder="Fin (secondes)"><br>
+  <button id="playTrim">Lire la portion</button>
 
   <audio id="audioPlayer" controls loop></audio>
 
   <script>
-    const input = document.getElementById('fileInput');
+    const inputFile = document.getElementById('fileInput');
     const player = document.getElementById('audioPlayer');
+    const startInput = document.getElementById('start');
+    const endInput = document.getElementById('end');
+    const playTrim = document.getElementById('playTrim');
 
-    input.addEventListener('change', (e) => {
+    let fileUrl;
+
+    // Import du fichier
+    inputFile.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      // Vérifie que le fichier est bien audio
-      if (!file.type.startsWith('audio/')) {
-        alert("Merci de choisir un fichier audio.");
-        return;
-      }
+      fileUrl = URL.createObjectURL(file);
+      player.src = fileUrl;
+      player.loop = true;
+      player.play().catch(() => {});
+    });
 
-      const url = URL.createObjectURL(file);
-      player.src = url;
-      player.play().catch(() => {}); // auto-play si possible
+    // Lecture de la portion définie
+    playTrim.addEventListener('click', () => {
+      const start = parseFloat(startInput.value) || 0;
+      const end = parseFloat(endInput.value) || player.duration;
+
+      player.currentTime = start;
+      player.play();
+
+      // Supprime l'ancien écouteur pour éviter les doublons
+      player.removeEventListener('timeupdate', player.onTimeUpdate);
+
+      player.onTimeUpdate = () => {
+        if (player.currentTime >= end) {
+          player.currentTime = start; // reboucle
+        }
+      };
+
+      player.addEventListener('timeupdate', player.onTimeUpdate);
     });
   </script>
 
