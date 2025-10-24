@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loops by Samuel</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #fafafa;
+      padding: 2rem;
+    }
+    h1 {
+      color: #333;
+    }
+    input[type="file"] {
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 2px dashed #aaa;
+      border-radius: 12px;
+      background: white;
+    }
+    audio {
+      width: 90%;
+      margin-top: 2rem;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎸 Loops by Samuel</h1>
+  <p>Sélectionne un fichier audio depuis ton téléphone ou ton ordi :</p>
+
+  <input type="file" id="fileInput" accept="audio/*">
+
+  <audio id="audioPlayer" controls loop></audio>
+
+  <script>
+    const input = document.getElementById('fileInput');
+    const player = document.getElementById('audioPlayer');
+
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      player.src = url;
+      player.play().catch(() => {}); // auto-play si possible
+    });
+  </script>
+
+  <p style="margin-top:2rem; color:#666;">© Samuel — 2025</p>
+</body>
+</html>
