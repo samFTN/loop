@@ -3,48 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loops par Samuel</title>
+  <title>Loop - Guitarisation™</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      background: #fafafa;
+      background: #f0f2f5;
       padding: 2rem;
+      color: #333;
     }
-    h1 { color: #333; }
-    input[type="file"], button, input[type="range"] {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      border-radius: 8px;
-      border: 1px solid #aaa;
+
+    .header {
+      margin-bottom: 2rem;
     }
-    audio { width: 90%; margin-top: 1rem; outline: none; }
+
+    .small-title {
+      font-size: 1rem;
+      color: #777;
+      letter-spacing: 0.05em;
+    }
+
+    .main-title {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #111;
+      margin-top: 0.2rem;
+    }
+
+    input[type="file"] {
+      padding: 1rem;
+      border-radius: 12px;
+      border: 2px dashed #bbb;
+      background: #fff;
+      cursor: pointer;
+      width: 90%;
+      max-width: 400px;
+      margin-bottom: 2rem;
+    }
+
     .trim-container {
       display: flex;
       justify-content: space-around;
       flex-wrap: wrap;
-      margin: 1rem 0;
       gap: 1rem;
+      margin-bottom: 1.5rem;
     }
+
     .trim-box {
       display: flex;
       flex-direction: column;
       align-items: center;
-      flex-basis: 48%; /* pour rester côte à côte sur petit écran */
-      min-width: 140px; /* pour ne pas devenir trop petit */
+      flex-basis: 48%;
+      min-width: 140px;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    .trim-label { font-weight: bold; margin: 0.3rem 0; }
-    .slider-container { width: 100%; }
-    .trim-controls { margin-top: 0.5rem; }
-    .trim-controls button { margin: 0 0.2rem; }
-    label { font-weight: bold; margin-bottom: 0.2rem; display: block; }
+
+    .trim-box label {
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+    }
+
+    .trim-label {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+
+    .slider-container input[type="range"] {
+      width: 100%;
+      accent-color: #4caf50;
+      cursor: pointer;
+    }
+
+    .trim-controls {
+      margin-top: 0.5rem;
+    }
+
+    .trim-controls button {
+      margin: 0 0.2rem;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .trim-controls button:hover {
+      background-color: #45a049;
+    }
+
+    audio {
+      width: 90%;
+      max-width: 600px;
+      margin-top: 1rem;
+      outline: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 0.8rem;
+      color: #777;
+    }
+
   </style>
 </head>
 <body>
-  <h1>🎸 Loops par Samuel</h1>
-  <p>Sélectionne un fichier audio ou vidéo : le son sera lu en boucle.</p>
 
-  <input type="file" id="fileInput" accept="audio/*,video/*"><br>
+  <div class="header">
+    <div class="small-title">Guitarisation™</div>
+    <div class="main-title">Loop</div>
+  </div>
+
+  <input type="file" id="fileInput" accept="audio/*,video/*">
 
   <div class="trim-container">
     <div class="trim-box">
@@ -71,9 +149,11 @@
     </div>
   </div>
 
-  <button id="playTrim">Lire la portion</button>
-
   <audio id="audioPlayer" controls></audio>
+
+  <footer>
+    Samuel Ferton - École Guitarisation™ - <a href="https://guitarschool.guitarisation.fr" target="_blank">https://guitarschool.guitarisation.fr</a> - 2025
+  </footer>
 
   <script>
     const inputFile = document.getElementById('fileInput');
@@ -89,8 +169,6 @@
     const endMinus = document.getElementById('endMinus');
     const endPlus = document.getElementById('endPlus');
 
-    const playTrim = document.getElementById('playTrim');
-
     let loopInterval;
 
     function updateLabels() {
@@ -105,23 +183,23 @@
       updateLabels();
     }
 
-    // Ajustement live : slider ou flèches
-    function startSliderChange() {
-      updateLabels();
-      if(player.currentTime < parseFloat(startSlider.value)) player.currentTime = parseFloat(startSlider.value);
-    }
-    function endSliderChange() {
-      updateLabels();
-      if(player.currentTime > parseFloat(endSlider.value)) player.currentTime = parseFloat(startSlider.value);
+    // Ajustement live
+    function adjustLoop() {
+      const start = parseFloat(startSlider.value);
+      const end = parseFloat(endSlider.value);
+      if (start >= end) return;
+      if (player.currentTime < start || player.currentTime > end) {
+        player.currentTime = start;
+      }
     }
 
-    startSlider.addEventListener('input', startSliderChange);
-    endSlider.addEventListener('input', endSliderChange);
+    startSlider.addEventListener('input', () => { updateLabels(); adjustLoop(); });
+    endSlider.addEventListener('input', () => { updateLabels(); adjustLoop(); });
 
-    startMinus.addEventListener('click', () => changeValue(startSlider, -0.1));
-    startPlus.addEventListener('click', () => changeValue(startSlider, 0.1));
-    endMinus.addEventListener('click', () => changeValue(endSlider, -0.1));
-    endPlus.addEventListener('click', () => changeValue(endSlider, 0.1));
+    startMinus.addEventListener('click', () => { changeValue(startSlider, -0.1); adjustLoop(); });
+    startPlus.addEventListener('click', () => { changeValue(startSlider, 0.1); adjustLoop(); });
+    endMinus.addEventListener('click', () => { changeValue(endSlider, -0.1); adjustLoop(); });
+    endPlus.addEventListener('click', () => { changeValue(endSlider, 0.1); adjustLoop(); });
 
     inputFile.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -137,30 +215,21 @@
         endSlider.max = duration;
         endSlider.value = duration;
         updateLabels();
+
+        // Boucle automatique
+        if(loopInterval) clearInterval(loopInterval);
+        loopInterval = setInterval(() => {
+          const start = parseFloat(startSlider.value);
+          const end = parseFloat(endSlider.value);
+          if (player.currentTime >= end) {
+            player.currentTime = start;
+          }
+        }, 10);
       });
-    });
-
-    playTrim.addEventListener('click', () => {
-      const start = parseFloat(startSlider.value);
-      const end = parseFloat(endSlider.value);
-      if (start >= end) { alert("Le début doit être inférieur à la fin !"); return; }
-
-      player.currentTime = start;
-      player.play();
-
-      if(loopInterval) clearInterval(loopInterval);
-
-      // Boucle précise avec interval très court
-      loopInterval = setInterval(() => {
-        if (player.currentTime >= end) {
-          player.currentTime = start;
-        }
-      }, 10);
     });
 
     updateLabels();
   </script>
 
-  <p style="margin-top:2rem; color:#666;">© Samuel — 2025</p>
 </body>
 </html>
