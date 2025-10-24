@@ -12,6 +12,7 @@ body {
   padding: 2rem;
   color: #333;
 }
+
 .header { margin-bottom: 2rem; }
 .small-title { font-size: 1rem; color: #777; letter-spacing: 0.05em; }
 .main-title { font-size: 3rem; font-weight: bold; color: #111; margin-top: 0.2rem; }
@@ -25,6 +26,9 @@ input[type="file"] {
   width: 90%;
   max-width: 400px;
   margin-bottom: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .trim-container {
@@ -60,6 +64,9 @@ audio {
   outline: none;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .toggle-text {
@@ -88,7 +95,12 @@ footer {
 }
 footer a { color: #4caf50; text-decoration: none; }
 
+/* Forcer import et lecteur audio sur des lignes séparées sur grand écran */
 @media (min-width: 600px) {
+  input[type="file"], audio {
+    display: block;
+    margin: 1rem auto;
+  }
   .trim-container { justify-content: space-around; }
 }
 </style>
@@ -100,7 +112,7 @@ footer a { color: #4caf50; text-decoration: none; }
   <div class="main-title">Loop</div>
 </div>
 
-<p>Importe un fichier audio et il se lira automatiquement en boucle :</p>
+<p>Importe un fichier audio ou vidéo et il se lira automatiquement en boucle :</p>
 <input type="file" id="fileInput" accept="audio/*,video/*">
 
 <audio id="audioPlayer" controls></audio>
