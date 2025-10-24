@@ -28,18 +28,18 @@ input[type="file"] {
 }
 
 .trim-container {
-  display: none; /* caché par défaut */
-  flex-wrap: wrap;
-  justify-content: space-around;
-  gap: 1rem;
+  display: none;
+  justify-content: center;
+  gap: 2rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 .trim-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 140px;
+  min-width: 180px;
   background: #fff;
   padding: 1rem;
   border-radius: 12px;
@@ -62,17 +62,23 @@ audio {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-button {
-  font-size: 0.9rem;
-  padding: 0.3rem 0.6rem;
-  background-color: #e0e0e0;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+.toggle-text {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #555;
   cursor: pointer;
-  transition: background 0.2s;
+  user-select: none;
+  margin-top: 0.5rem;
+  transition: color 0.2s;
 }
-button:hover { background-color: #d5d5d5; }
+.toggle-text:hover { color: #000; }
+
+.toggle-arrow {
+  display: inline-block;
+  margin-left: 0.3rem;
+  transition: transform 0.2s;
+}
 
 footer {
   margin-top: 3rem;
@@ -81,6 +87,10 @@ footer {
   font-weight: 500;
 }
 footer a { color: #4caf50; text-decoration: none; }
+
+@media (min-width: 600px) {
+  .trim-container { justify-content: space-around; }
+}
 </style>
 </head>
 <body>
@@ -95,8 +105,8 @@ footer a { color: #4caf50; text-decoration: none; }
 
 <audio id="audioPlayer" controls></audio>
 
-<div>
-  <button id="toggleTrim">Réglages de la loop</button>
+<div class="toggle-text" id="toggleTrim">
+  Options <span class="toggle-arrow">▼</span>
 </div>
 
 <div class="trim-container" id="trimContainer">
@@ -123,8 +133,10 @@ const startSlider = document.getElementById('startSlider');
 const endSlider = document.getElementById('endSlider');
 const startLabel = document.getElementById('startLabel');
 const endLabel = document.getElementById('endLabel');
+
 const trimContainer = document.getElementById('trimContainer');
 const toggleTrim = document.getElementById('toggleTrim');
+const toggleArrow = toggleTrim.querySelector('.toggle-arrow');
 
 function updateLabels() {
   startLabel.textContent = parseFloat(startSlider.value).toFixed(2);
@@ -170,10 +182,10 @@ audioPlayer.addEventListener('timeupdate', () => {
 toggleTrim.addEventListener('click', () => {
   if(trimContainer.style.display === 'flex') {
     trimContainer.style.display = 'none';
-    toggleTrim.textContent = "Réglages de la loop";
+    toggleArrow.style.transform = 'rotate(0deg)';
   } else {
     trimContainer.style.display = 'flex';
-    toggleTrim.textContent = "Masquer les réglages";
+    toggleArrow.style.transform = 'rotate(180deg)';
   }
 });
 
