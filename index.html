@@ -16,11 +16,40 @@ body {
 .small-title { font-size: 1rem; color: #777; letter-spacing: 0.05em; }
 .main-title { font-size: 3rem; font-weight: bold; color: #111; margin-top: 0.2rem; }
 
-input[type="number"], button {
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #aaa;
+input[type="file"] {
+  padding: 1rem;
+  border-radius: 12px;
+  border: 2px dashed #bbb;
+  background: #fff;
+  cursor: pointer;
+  width: 90%;
+  max-width: 400px;
+  margin-bottom: 2rem;
+}
+
+.trim-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.trim-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-basis: 45%;
+  min-width: 140px;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.trim-label {
+  font-weight: bold;
+  margin: 0.3rem 0;
 }
 
 .slider-container input[type="range"] {
@@ -28,14 +57,25 @@ input[type="number"], button {
   accent-color: #4caf50;
 }
 
-.trim-container { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
-.trim-box { display: flex; flex-direction: column; align-items: center; flex-basis: 45%; min-width: 140px; background: #fff; padding: 1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-.trim-label { font-weight: bold; margin: 0.3rem 0; }
+audio {
+  width: 90%;
+  max-width: 600px;
+  margin-top: 1rem;
+  outline: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
 
-audio { width: 90%; max-width: 600px; margin-top: 1rem; outline: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-
-footer { margin-top: 3rem; font-size: 0.9rem; color: #555; font-weight: 500; }
-footer a { color: #4caf50; text-decoration: none; }
+footer {
+  margin-top: 3rem;
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 500;
+}
+footer a {
+  color: #4caf50;
+  text-decoration: none;
+}
 </style>
 </head>
 <body>
@@ -44,6 +84,9 @@ footer a { color: #4caf50; text-decoration: none; }
   <div class="small-title">Guitarisation™</div>
   <div class="main-title">Loop</div>
 </div>
+
+<p>Importe un fichier audio ou vidéo et il se lira automatiquement en boucle :</p>
+<input type="file" id="fileInput" accept="audio/*,video/*">
 
 <div class="trim-container">
   <div class="trim-box">
@@ -65,63 +108,55 @@ Samuel Ferton – École Guitarisation™ – <a href="https://guitarschool.guit
 </footer>
 
 <script>
+const inputFile = document.getElementById('fileInput');
 const audioPlayer = document.getElementById('audioPlayer');
 const startSlider = document.getElementById('startSlider');
 const endSlider = document.getElementById('endSlider');
 const startLabel = document.getElementById('startLabel');
 const endLabel = document.getElementById('endLabel');
 
-// 🔹 Remplace ici par le fichier audio hébergé sur ton site
-const audioUrl = 'loop.mp3';
-audioPlayer.src = audioUrl;
-audioPlayer.loop = true;
-audioPlayer.play().catch(()=>{});
-
-// Lecture et boucle
-function adjustLoop() {
-  const start = parseFloat(startSlider.value);
-  const end = parseFloat(endSlider.value);
-  if(start >= end) return;
-  if(audioPlayer.currentTime < start || audioPlayer.currentTime > end) {
-    audioPlayer.currentTime = start;
-  }
-}
-
 function updateLabels() {
   startLabel.textContent = parseFloat(startSlider.value).toFixed(2);
   endLabel.textContent = parseFloat(endSlider.value).toFixed(2);
 }
 
-// Paramètres depuis l’URL
-const params = new URLSearchParams(window.location.search);
-startSlider.value = parseFloat(params.get('start')) || 0;
-endSlider.value = parseFloat(params.get('end')) || 0;
-
-audioPlayer.addEventListener('loadedmetadata', () => {
-  if(endSlider.value == 0) endSlider.value = audioPlayer.duration.toFixed(2);
-  startSlider.max = audioPlayer.duration;
-  endSlider.max = audioPlayer.duration;
-  updateLabels();
-});
+function adjustLoop() {
+  const start = parseFloat(startSlider.value);
+  const end = parseFloat(endSlider.value);
+  if (start >= end) return;
+  if (audioPlayer.currentTime < start || audioPlayer.currentTime > end) {
+    audioPlayer.currentTime = start;
+  }
+}
 
 startSlider.addEventListener('input', () => { updateLabels(); adjustLoop(); });
 endSlider.addEventListener('input', () => { updateLabels(); adjustLoop(); });
 
-// Boucle continue
+inputFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  audioPlayer.src = URL.createObjectURL(file);
+  audioPlayer.loop = true;
+  audioPlayer.play().catch(()=>{});
+
+  audioPlayer.addEventListener('loadedmetadata', () => {
+    const duration = audioPlayer.duration.toFixed(2);
+    startSlider.max = duration;
+    endSlider.max = duration;
+    endSlider.value = duration;
+    updateLabels();
+  });
+});
+
 audioPlayer.addEventListener('timeupdate', () => {
   if(audioPlayer.currentTime >= parseFloat(endSlider.value)) {
     audioPlayer.currentTime = parseFloat(startSlider.value);
   }
 });
 
-// Générer lien partageable
-function generateLink() {
-  const link = `${window.location.origin}${window.location.pathname}?start=${startSlider.value}&end=${endSlider.value}`;
-  navigator.clipboard.writeText(link).then(()=>alert("Lien copié !"));
-}
+updateLabels();
 </script>
-
-<button onclick="generateLink()">Copier le lien partageable</button>
 
 </body>
 </html>
