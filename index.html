@@ -25,12 +25,17 @@
       margin-top: 1rem;
       outline: none;
     }
-    .slider-container {
+    .trim-container {
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin: 1rem 0;
       flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .trim-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
   </style>
 </head>
@@ -40,14 +45,16 @@
 
   <input type="file" id="fileInput" accept="audio/*,video/*"><br>
 
-  <div class="slider-container">
-    <div>
-      <label>Début : <span id="startLabel">0</span>s</label><br>
-      <input type="range" id="start" min="0" step="0.01" value="0">
+  <div class="trim-container">
+    <div class="trim-box">
+      <label>Début (s)</label>
+      <input type="range" id="startSlider" min="0" step="0.01" value="0">
+      <input type="number" id="startNumber" min="0" step="0.01" value="0">
     </div>
-    <div>
-      <label>Fin : <span id="endLabel">0</span>s</label><br>
-      <input type="range" id="end" min="0" step="0.01" value="0">
+    <div class="trim-box">
+      <label>Fin (s)</label>
+      <input type="range" id="endSlider" min="0" step="0.01" value="0">
+      <input type="number" id="endNumber" min="0" step="0.01" value="0">
     </div>
   </div>
 
@@ -58,14 +65,31 @@
   <script>
     const inputFile = document.getElementById('fileInput');
     const player = document.getElementById('audioPlayer');
-    const startSlider = document.getElementById('start');
-    const endSlider = document.getElementById('end');
-    const startLabel = document.getElementById('startLabel');
-    const endLabel = document.getElementById('endLabel');
+
+    const startSlider = document.getElementById('startSlider');
+    const endSlider = document.getElementById('endSlider');
+    const startNumber = document.getElementById('startNumber');
+    const endNumber = document.getElementById('endNumber');
     const playTrim = document.getElementById('playTrim');
 
     let fileUrl;
 
+    // Synchronisation slider <-> input number
+    function syncStart(value) {
+      startSlider.value = value;
+      startNumber.value = value;
+    }
+    function syncEnd(value) {
+      endSlider.value = value;
+      endNumber.value = value;
+    }
+
+    startSlider.addEventListener('input', e => syncStart(e.target.value));
+    startNumber.addEventListener('input', e => syncStart(e.target.value));
+    endSlider.addEventListener('input', e => syncEnd(e.target.value));
+    endNumber.addEventListener('input', e => syncEnd(e.target.value));
+
+    // Import du fichier
     inputFile.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -76,18 +100,15 @@
       player.play().catch(() => {});
 
       player.addEventListener('loadedmetadata', () => {
-        // Mettre à jour les sliders selon la durée
-        startSlider.max = player.duration.toFixed(2);
-        endSlider.max = player.duration.toFixed(2);
-        endSlider.value = player.duration.toFixed(2);
-        startLabel.textContent = startSlider.value;
-        endLabel.textContent = endSlider.value;
+        const duration = player.duration.toFixed(2);
+        startSlider.max = duration;
+        endSlider.max = duration;
+        endSlider.value = duration;
+        startNumber.max = duration;
+        endNumber.max = duration;
+        endNumber.value = duration;
       });
     });
-
-    // Mettre à jour les labels quand on bouge les sliders
-    startSlider.addEventListener('input', () => startLabel.textContent = startSlider.value);
-    endSlider.addEventListener('input', () => endLabel.textContent = endSlider.value);
 
     playTrim.addEventListener('click', () => {
       const start = parseFloat(startSlider.value);
