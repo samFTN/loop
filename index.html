@@ -24,13 +24,20 @@
       justify-content: space-around;
       flex-wrap: wrap;
       margin: 1rem 0;
-      gap: 2rem;
+      gap: 1rem;
     }
-    .trim-box { display: flex; flex-direction: column; align-items: center; }
-    .trim-label { margin-bottom: 0.3rem; font-weight: bold; }
+    .trim-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-basis: 48%; /* pour rester côte à côte sur petit écran */
+      min-width: 140px; /* pour ne pas devenir trop petit */
+    }
+    .trim-label { font-weight: bold; margin: 0.3rem 0; }
+    .slider-container { width: 100%; }
     .trim-controls { margin-top: 0.5rem; }
     .trim-controls button { margin: 0 0.2rem; }
-    .slider-container { display: flex; flex-direction: column; align-items: center; }
+    label { font-weight: bold; margin-bottom: 0.2rem; display: block; }
   </style>
 </head>
 <body>
@@ -41,6 +48,7 @@
 
   <div class="trim-container">
     <div class="trim-box">
+      <label for="startSlider">Début (s)</label>
       <span class="trim-label" id="startLabel">0.00</span>
       <div class="slider-container">
         <input type="range" id="startSlider" min="0" step="0.01" value="0">
@@ -51,6 +59,7 @@
       </div>
     </div>
     <div class="trim-box">
+      <label for="endSlider">Fin (s)</label>
       <span class="trim-label" id="endLabel">0.00</span>
       <div class="slider-container">
         <input type="range" id="endSlider" min="0" step="0.01" value="0">
@@ -64,7 +73,7 @@
 
   <button id="playTrim">Lire la portion</button>
 
-  <audio id="audioPlayer" controls loop></audio>
+  <audio id="audioPlayer" controls></audio>
 
   <script>
     const inputFile = document.getElementById('fileInput');
@@ -96,8 +105,18 @@
       updateLabels();
     }
 
-    startSlider.addEventListener('input', updateLabels);
-    endSlider.addEventListener('input', updateLabels);
+    // Ajustement live : slider ou flèches
+    function startSliderChange() {
+      updateLabels();
+      if(player.currentTime < parseFloat(startSlider.value)) player.currentTime = parseFloat(startSlider.value);
+    }
+    function endSliderChange() {
+      updateLabels();
+      if(player.currentTime > parseFloat(endSlider.value)) player.currentTime = parseFloat(startSlider.value);
+    }
+
+    startSlider.addEventListener('input', startSliderChange);
+    endSlider.addEventListener('input', endSliderChange);
 
     startMinus.addEventListener('click', () => changeValue(startSlider, -0.1));
     startPlus.addEventListener('click', () => changeValue(startSlider, 0.1));
@@ -131,14 +150,14 @@
 
       if(loopInterval) clearInterval(loopInterval);
 
+      // Boucle précise avec interval très court
       loopInterval = setInterval(() => {
         if (player.currentTime >= end) {
           player.currentTime = start;
         }
-      }, 10); // vérifie toutes les 10ms pour boucle précise
+      }, 10);
     });
 
-    // Initial labels
     updateLabels();
   </script>
 
