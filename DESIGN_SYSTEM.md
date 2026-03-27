@@ -52,8 +52,8 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 :root {
   --bg:           #f5f5f3;   /* fond page — blanc cassé chaud, jamais blanc pur */
   --card:         #ffffff;   /* fond des cartes */
-  --accent:       #ff5533;   /* rouge-orange — action principale du produit */
-  --accent-soft:  #fff2ef;   /* fond doux associé à l'accent */
+  --accent:       #d4a017;   /* jaune doré — action principale du produit (cohérent avec brand #fac100) */
+  --accent-soft:  #fef9e3;   /* fond doux associé à l'accent */
   --gold:         #e8c23a;   /* or Guitarisation — réservé au CTA école */
   --gold-hover:   #d4af30;   /* or foncé au survol du CTA */
   --dark:         #111111;   /* titres, boutons primaires, texte fort */
@@ -67,7 +67,7 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
 ### Règles d'usage couleur
 
-- **`--accent` rouge-orange** → actions du produit (play, tap, toggles actifs, focus des inputs)
+- **`--accent` jaune doré** → actions du produit (play, tap, toggles actifs, focus des inputs)
 - **`--gold` or** → exclusivement le bouton "Aller sur l'école Guitarisation™"
 - **`--dark`** → bouton play principal, textes forts, éléments actifs en mode sombre
 - Ne jamais mettre de fond blanc pur (#ffffff) sur la `<body>` — toujours `--bg`
@@ -384,7 +384,7 @@ Quand une section affiche plusieurs blocs côte à côte dans une grille (ex. ch
   transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
 }
 .play-btn:hover { transform: scale(1.06); box-shadow: 0 14px 36px rgba(0,0,0,0.22); }
-.play-btn.playing { background: var(--accent); box-shadow: 0 8px 28px rgba(255,85,51,0.35); }
+.play-btn.playing { background: var(--accent); box-shadow: 0 8px 28px rgba(212,160,23,0.35); }
 ```
 
 ---
