@@ -1001,5 +1001,18 @@ window.addEventListener('resize', () => {
 });
 </script>
 
+<button class="help-btn" id="helpBtn" onclick="toggleHelp()" aria-label="Aide">?</button>
+<div class="help-panel" id="helpPanel">
+  <div class="help-header">
+    <span class="help-title">Comment utiliser le Loop Player</span>
+    <button class="help-close" onclick="toggleHelp()" aria-label="Fermer">✕</button>
+  </div>
+  <div class="help-body">
+    <p><strong>Importer un audio</strong><br>Glissez un fichier audio ou vidéo dans la zone d'import, ou cliquez pour le sélectionner.</p>
+    <p><strong>Enregistrer</strong><br>Cliquez sur "Enregistrer" pour capturer directement depuis votre micro.</p>
+    <p><strong>Définir la boucle</strong><br>Cliquez et glissez sur la forme d'onde pour sélectionner la portion à boucler. Utilisez les champs Début / Fin pour un réglage précis.</p>
+    <p><strong>Vitesse</strong><br>Ralentissez ou accélérez la lecture sans changer la tonalité. Idéal pour apprendre un passage difficile.</p>
+  </div>
+</div>
 </body>
 </html>
