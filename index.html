@@ -3,80 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loop - Guitarisation™</title>
+<title>Loop — Guitarisation™</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 
+:root {
+  --bg:           #f5f5f3;
+  --card:         #ffffff;
+  --accent:       #ff5533;
+  --accent-soft:  #fff2ef;
+  --gold:         #e8c23a;
+  --gold-hover:   #d4af30;
+  --dark:         #111111;
+  --text:         #1a1a1a;
+  --muted:        #9ca3af;
+  --muted2:       #6b7280;
+  --border:       #e8e8e4;
+  --border2:      #f0f0ec;
+  --r:    22px;
+  --r-sm: 11px;
+  --r-xs:  8px;
+}
+
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    rgba(255,255,255,0.85) 0%,
+    transparent 70%
+  );
   padding: 15px;
-  color: #333;
+  color: var(--text);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.container { max-width: 900px; margin: 0 auto; }
-
+/* ── Header ──────────────────────────────────────────── */
 header {
-  text-align: center;
-  color: white;
-  margin-bottom: 30px;
-  margin-top: 30px;
+  width: 100%;
+  max-width: 760px;
+  padding: 10px 0 18px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
 }
 
-header h1 {
-  font-size: 2.2em;
-  font-weight: bold;
-  line-height: 1.2;
-  margin-bottom: 10px;
+.header-byline {
+  font-size: 12px; font-weight: 500;
+  color: var(--muted2); letter-spacing: 0.2px;
+  justify-self: start;
 }
 
-header .subtitle {
-  font-size: 1.1em;
-  opacity: 0.9;
+.header-logo { justify-self: center; }
+.header-logo img { height: 42px; width: auto; display: block; }
+
+.header-logo-text {
+  font-size: 22px; font-weight: 900;
+  letter-spacing: -0.5px; color: var(--dark); line-height: 1;
+}
+.header-logo-text em { font-style: normal; color: var(--accent); }
+
+.header-cta { justify-self: end; }
+
+.btn-school {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: var(--gold);
+  color: #fff;
+  font-family: inherit; font-size: 13px; font-weight: 700;
+  text-decoration: none; border: none; cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(232,194,58,0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s;
+}
+.btn-school:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(232,194,58,0.45);
+  background: var(--gold-hover);
+}
+.btn-school:active { transform: translateY(0); }
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px; height: 36px; padding: 6px;
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-xs);
+  cursor: pointer;
+}
+.hamburger span {
+  display: block; height: 2px; border-radius: 2px;
+  background: var(--dark); transition: background 0.15s;
+}
+.hamburger:hover span { background: var(--accent); }
+
+.nav-dropdown {
+  display: none;
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: white;
+  border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+  min-width: 220px; overflow: hidden; z-index: 100;
+}
+.nav-dropdown.open { display: block; }
+.nav-dropdown a {
+  display: block; padding: 14px 18px;
+  font-size: 13px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+  transition: background 0.1s;
+}
+.nav-dropdown a:hover { background: var(--border2); }
+.nav-dropdown a::before { content: '→ '; color: var(--gold); }
+
+/* ── Animations ──────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes flipFromLeft {
+  from {
+    opacity: 0;
+    transform: perspective(900px) translateX(-70px) rotateY(-18deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(900px) translateX(0) rotateY(0deg);
+  }
+}
+
+.anim-header { animation: fadeIn       0.45s ease                               both; }
+.anim-card   { animation: flipFromLeft 0.65s cubic-bezier(0.08, 0.92, 0.18, 1) 0.05s both; }
+
+/* ── Main content ────────────────────────────────────── */
+.main-content {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .section {
-  background: white;
-  border-radius: 12px;
+  background: var(--card);
+  border-radius: var(--r);
   padding: 25px;
-  box-shadow: 0 8px 15px rgba(0,0,0,0.15);
-  margin-bottom: 20px;
+  box-shadow:
+    0 60px 120px rgba(0,0,0,0.10),
+    0 20px 48px  rgba(0,0,0,0.07),
+    0 4px  12px  rgba(0,0,0,0.04);
 }
 
-.section h2 {
-  color: #667eea;
-  margin-bottom: 20px;
-  font-size: 1.5em;
-  border-bottom: 2px solid #667eea;
-  padding-bottom: 8px;
-  text-align: center;
+.section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted2);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
 }
 
+/* ── Upload zone ─────────────────────────────────────── */
 .upload-zone {
-  border: 2px dashed #667eea;
-  border-radius: 12px;
-  padding: 30px;
+  border: 2px dashed var(--border);
+  border-radius: var(--r-sm);
+  padding: 28px;
   text-align: center;
-  background: rgba(102, 126, 234, 0.05);
+  background: var(--border2);
   cursor: pointer;
-  transition: all 0.3s;
-  margin-bottom: 15px;
+  transition: all 0.2s;
+  margin-bottom: 14px;
 }
 
 .upload-zone:hover,
 .upload-zone.dragover {
-  background: rgba(102, 126, 234, 0.15);
-  border-color: #764ba2;
+  background: var(--accent-soft);
+  border-color: var(--accent);
   border-style: solid;
 }
 
 .upload-zone input[type="file"] { display: none; }
 
 .upload-label {
-  font-size: 1.1em;
-  color: #667eea;
+  font-size: 14px;
   font-weight: 600;
+  color: var(--muted2);
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -84,75 +204,82 @@ header .subtitle {
   gap: 10px;
 }
 
+.upload-zone:hover .upload-label,
+.upload-zone.dragover .upload-label { color: var(--accent); }
+
 .import-actions {
   display: flex;
   justify-content: center;
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 .record-btn {
-  padding: 10px 28px;
+  padding: 10px 24px;
   border: none;
-  border-radius: 25px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: var(--r-xs);
+  background: var(--dark);
   color: white;
-  font-size: 1em;
-  font-weight: 600;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
   display: flex;
   align-items: center;
   gap: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
 }
 
 .record-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.22);
 }
 
 .record-btn.recording {
-  background: linear-gradient(135deg, #ff4444, #cc0000);
+  background: var(--accent);
+  box-shadow: 0 4px 14px rgba(255,85,51,0.35);
   animation: pulse-rec 1.2s infinite;
 }
 
 @keyframes pulse-rec {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255,68,68,0.5); }
-  50%       { box-shadow: 0 0 0 12px rgba(255,68,68,0); }
+  0%, 100% { box-shadow: 0 0 0 0   rgba(255,85,51,0.4); }
+  50%       { box-shadow: 0 0 0 10px rgba(255,85,51,0);   }
 }
 
 audio {
   width: 100%;
   margin-top: 10px;
   outline: none;
-  border-radius: 10px;
+  border-radius: var(--r-xs);
 }
 
-/* ── Waveform trimmer ─────────────────────────────── */
+/* ── Waveform trimmer ─────────────────────────────────── */
 .waveform-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 90px;
-  background: #f5f7ff;
-  border-radius: 10px;
-  color: #aaa;
+  background: var(--border2);
+  border-radius: var(--r-sm);
+  color: var(--muted);
   font-style: italic;
-  border: 2px dashed #ddd;
+  border: 1.5px dashed var(--border);
   margin-bottom: 15px;
-  font-size: 0.95em;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .waveform-container {
   position: relative;
   width: 100%;
   height: 90px;
-  border-radius: 10px;
+  border-radius: var(--r-sm);
   overflow: hidden;
   margin-bottom: 15px;
   display: none;
   user-select: none;
   touch-action: none;
-  background: #1a1a2e;
+  background: var(--dark);
 }
 
 #waveformCanvas {
@@ -162,38 +289,41 @@ audio {
   display: block;
 }
 
-/* ── Speed control ────────────────────────────────── */
+/* ── Speed control ────────────────────────────────────── */
 .speed-control {
   display: none;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background: #f5f7ff;
-  padding: 12px 20px;
-  border-radius: 10px;
-  border: 1px solid #e0e6ff;
-  margin-bottom: 15px;
+  background: var(--border2);
+  padding: 12px 16px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--border);
+  margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
 .speed-control label {
-  font-weight: 600;
-  color: #667eea;
-  font-size: 0.95em;
+  font-weight: 700;
+  color: var(--muted2);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 .speed-control input[type="range"] {
   width: 180px;
-  accent-color: #667eea;
+  accent-color: var(--accent);
   cursor: pointer;
 }
 
 .speed-value {
-  font-weight: bold;
-  color: #333;
+  font-weight: 700;
+  color: var(--dark);
   min-width: 40px;
   text-align: center;
+  font-size: 14px;
 }
 
 .speed-presets {
@@ -204,111 +334,139 @@ audio {
 }
 
 .speed-preset {
-  padding: 4px 10px;
-  border: 1.5px solid #667eea;
-  border-radius: 15px;
-  background: white;
-  color: #667eea;
-  font-size: 0.85em;
-  font-weight: 600;
+  padding: 5px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-xs);
+  background: var(--card);
+  color: var(--muted2);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.12s;
 }
 
 .speed-preset:hover,
 .speed-preset.active {
-  background: #667eea;
+  background: var(--accent);
+  border-color: var(--accent);
   color: white;
 }
 
-/* ── Precise inputs ───────────────────────────────── */
+/* ── Precise inputs ───────────────────────────────────── */
 .precise-inputs {
   display: none;
-  gap: 15px;
+  gap: 12px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 5px;
+  margin-top: 4px;
 }
 
 .precise-input-group {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #f5f7ff;
+  background: var(--border2);
   padding: 10px 16px;
-  border-radius: 10px;
-  border: 1px solid #e0e6ff;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--border);
 }
 
 .precise-input-group label {
-  font-weight: 600;
-  color: #667eea;
-  font-size: 0.95em;
+  font-weight: 700;
+  color: var(--muted2);
+  font-size: 12px;
   white-space: nowrap;
 }
 
 .precise-input-group input[type="number"] {
   width: 85px;
-  padding: 6px 8px;
-  border: 1.5px solid #667eea;
-  border-radius: 6px;
+  padding: 6px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-xs);
   text-align: center;
-  font-size: 1em;
-  color: #333;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--text);
+  background: white;
   outline: none;
+  transition: border-color 0.15s;
 }
 
-.precise-input-group input[type="number"]:focus {
-  border-color: #764ba2;
-  box-shadow: 0 0 0 2px rgba(102,126,234,0.2);
+.precise-input-group input[type="number"]:focus,
+.precise-input-group input[type="number"]:hover {
+  border-color: var(--accent);
 }
 
 .precise-input-group span {
-  color: #667eea;
+  color: var(--muted);
   font-weight: 600;
+  font-size: 12px;
 }
 
+/* ── Footer ──────────────────────────────────────────── */
 footer {
+  width: 100%;
+  max-width: 760px;
+  margin-top: 20px;
+  padding: 12px 0 6px;
   text-align: center;
-  color: white;
-  margin-top: 30px;
-  padding: 20px;
-  opacity: 0.9;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  border-top: 1px solid var(--border2);
 }
 
-footer p { margin: 5px 0; }
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 640px) {
+  header { padding: 10px 0 14px; grid-template-columns: 1fr auto 1fr; }
+  .header-logo img { height: 32px; }
+  .header-byline { font-size: 10px; }
+  .btn-school { display: none; }
+  .hamburger  { display: flex; }
 
-footer a {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-footer a:hover { text-decoration: underline; }
-
-@media (max-width: 768px) {
-  body { padding: 10px; font-size: 0.9em; }
-  header h1 { font-size: 1.8em; }
-  .section { padding: 15px; }
+  .section { padding: 18px; border-radius: var(--r-sm); }
   .waveform-container { height: 70px; }
 }
 </style>
 </head>
 <body>
-<div class="container">
 
-<header>
-  <h1>Audio Loop</h1>
-  <div class="subtitle">Guitarisation™</div>
+<header class="anim-header">
+  <div class="header-byline">par Samuel Ferton</div>
+
+  <div class="header-logo">
+    <img src="Logo Guitarisation.png" alt="Guitarisation™ — L'École de Guitare 2.0"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div class="header-logo-text" style="display:none">Guitar<em>isation</em>™</div>
+  </div>
+
+  <div class="header-cta" style="position:relative;">
+    <a class="btn-school" href="https://guitarschool.guitarisation.fr/login"
+       target="_blank" rel="noopener">
+      Aller sur l'école Guitarisation™
+    </a>
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-dropdown" id="navDropdown">
+      <a href="https://guitarschool.guitarisation.fr/login" target="_blank" rel="noopener">
+        Aller sur l'école Guitarisation™
+      </a>
+    </div>
+  </div>
 </header>
+
+<div class="main-content anim-card">
 
 <!-- ── Import ─────────────────────────────────────── -->
 <div class="section">
-  <h2>📁 Import</h2>
+  <div class="section-title">Import</div>
 
   <div class="upload-zone" id="uploadZone">
     <label class="upload-label">
-      <span style="font-size:2em;">🎵</span>
+      <span style="font-size:1.8em;">🎵</span>
       <span>Cliquez ou déposez un fichier audio / vidéo</span>
     </label>
     <input type="file" id="fileInput" accept="audio/*,video/*">
@@ -326,7 +484,7 @@ footer a:hover { text-decoration: underline; }
 
 <!-- ── Réglages ───────────────────────────────────── -->
 <div class="section">
-  <h2>⚙️ Réglages</h2>
+  <div class="section-title">Réglages</div>
 
   <div class="waveform-placeholder" id="waveformPlaceholder">
     Importez un fichier pour voir la forme d'onde
@@ -337,7 +495,7 @@ footer a:hover { text-decoration: underline; }
   </div>
 
   <div class="speed-control" id="speedControl">
-    <label>🎚️ Vitesse</label>
+    <label>Vitesse</label>
     <input type="range" id="speedSlider" min="0.25" max="2" step="0.05" value="1">
     <span class="speed-value" id="speedValue">1×</span>
     <div class="speed-presets">
@@ -351,27 +509,35 @@ footer a:hover { text-decoration: underline; }
 
   <div class="precise-inputs" id="preciseInputs">
     <div class="precise-input-group">
-      <label for="startInput">⏩ Début</label>
+      <label for="startInput">Début</label>
       <input type="number" id="startInput" min="0" step="0.01" value="0">
       <span>s</span>
     </div>
     <div class="precise-input-group">
-      <label for="endInput">⏸️ Fin</label>
+      <label for="endInput">Fin</label>
       <input type="number" id="endInput" min="0" step="0.01" value="0">
       <span>s</span>
     </div>
   </div>
 </div>
 
+</div><!-- /.main-content -->
+
 <footer>
-  <p>Samuel Ferton – École Guitarisation™</p>
-  <p><a href="https://guitarschool.guitarisation.fr" target="_blank">guitarschool.guitarisation.fr</a></p>
-  <p style="margin-top:10px; font-size:0.85em;">2026</p>
+  © 2026 Guitarisation™ — L'École de Guitare 2.0 · par Samuel Ferton
 </footer>
 
-</div>
-
 <script>
+// ── Nav ──────────────────────────────────────────────
+function toggleNav() {
+  document.getElementById('navDropdown').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#hamburgerBtn') && !e.target.closest('#navDropdown')) {
+    document.getElementById('navDropdown').classList.remove('open');
+  }
+});
+
 // ── State ───────────────────────────────────────────
 let audioCtx       = null;
 let audioBuffer    = null;
@@ -419,10 +585,10 @@ async function loadAudio(source) {
   [startTime, endTime] = detectSilence(audioBuffer);
 
   // Show UI
-  placeholder.style.display    = 'none';
+  placeholder.style.display       = 'none';
   waveformContainer.style.display = 'block';
-  speedControl.style.display   = 'flex';
-  preciseInputs.style.display  = 'flex';
+  speedControl.style.display      = 'flex';
+  preciseInputs.style.display     = 'flex';
 
   setupCanvas();
   updateInputs();
@@ -443,7 +609,6 @@ function detectSilence(buffer, threshold = 0.015) {
     if (Math.abs(data[i]) > threshold) { e = i; break; }
   }
 
-  // Small padding
   const tStart = Math.max(0,        s / sr - 0.05);
   const tEnd   = Math.min(duration, e / sr + 0.05);
   return [tStart, tEnd];
@@ -473,7 +638,6 @@ function buildPeaks(buffer, numBars) {
     if (max > maxPeak) maxPeak = max;
   }
 
-  // Normalize so waveform fills the height
   if (maxPeak > 0) {
     for (let i = 0; i < numBars; i++) peaks[i] /= maxPeak;
   }
@@ -489,7 +653,7 @@ function drawCanvas() {
   ctx.clearRect(0, 0, W, H);
 
   // Background
-  ctx.fillStyle = '#1a1a2e';
+  ctx.fillStyle = '#111111';
   ctx.fillRect(0, 0, W, H);
 
   const sx = Math.round((startTime / duration) * W);
@@ -501,7 +665,7 @@ function drawCanvas() {
     const x    = i * barW;
     const barH = waveformPeaks[i] * H * 0.85;
     const y    = (H - barH) / 2;
-    ctx.fillStyle = (x >= sx && x <= ex) ? '#667eea' : '#3a3a5c';
+    ctx.fillStyle = (x >= sx && x <= ex) ? '#ff5533' : '#2a2a2a';
     ctx.fillRect(x, y, Math.max(barW - 1, 1), barH);
   }
 
@@ -511,7 +675,7 @@ function drawCanvas() {
   ctx.fillRect(ex, 0, W - ex, H);
 
   // Selection top & bottom border
-  ctx.strokeStyle = 'rgba(102,126,234,0.6)';
+  ctx.strokeStyle = 'rgba(255,85,51,0.6)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(sx, 0); ctx.lineTo(ex, 0);
@@ -520,13 +684,13 @@ function drawCanvas() {
 
   // ── Start handle ──
   const g1 = ctx.createLinearGradient(sx - 6, 0, sx + 6, 0);
-  g1.addColorStop(0,   'rgba(102,126,234,0)');
-  g1.addColorStop(0.5, '#667eea');
-  g1.addColorStop(1,   'rgba(102,126,234,0)');
+  g1.addColorStop(0,   'rgba(255,85,51,0)');
+  g1.addColorStop(0.5, '#ff5533');
+  g1.addColorStop(1,   'rgba(255,85,51,0)');
   ctx.fillStyle = g1;
   ctx.fillRect(sx - 6, 0, 12, H);
 
-  ctx.fillStyle = '#667eea';
+  ctx.fillStyle = '#ff5533';
   ctx.fillRect(sx - 5, 0,     10, 4);
   ctx.fillRect(sx - 5, H - 4, 10, 4);
 
@@ -538,13 +702,13 @@ function drawCanvas() {
 
   // ── End handle ──
   const g2 = ctx.createLinearGradient(ex - 6, 0, ex + 6, 0);
-  g2.addColorStop(0,   'rgba(118,75,162,0)');
-  g2.addColorStop(0.5, '#764ba2');
-  g2.addColorStop(1,   'rgba(118,75,162,0)');
+  g2.addColorStop(0,   'rgba(255,85,51,0)');
+  g2.addColorStop(0.5, '#ff5533');
+  g2.addColorStop(1,   'rgba(255,85,51,0)');
   ctx.fillStyle = g2;
   ctx.fillRect(ex - 6, 0, 12, H);
 
-  ctx.fillStyle = '#764ba2';
+  ctx.fillStyle = '#ff5533';
   ctx.fillRect(ex - 5, 0,     10, 4);
   ctx.fillRect(ex - 5, H - 4, 10, 4);
 
